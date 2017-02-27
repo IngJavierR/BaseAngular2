@@ -1,2 +1,5 @@
+.tmp/
+coverage/
+dist/
 node_modules/
-build/
+jspm_packages/

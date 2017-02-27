@@ -1,72 +1,33 @@
-var gulp = require('gulp'),
-    rename = require('gulp-rename'),
-    traceur = require('gulp-traceur'),
-    webserver = require('gulp-webserver');
+const gulp = require('gulp');
+const HubRegistry = require('gulp-hub');
+const browserSync = require('browser-sync');
 
-// run init tasks
-gulp.task('default', ['dependencies', 'js', 'html', 'css']);
+const conf = require('./conf/gulp.conf');
 
-// run development task
-gulp.task('dev', ['watch', 'serve']);
+// Load some files into the registry
+const hub = new HubRegistry([conf.path.tasks('*.js')]);
 
-// serve the build dir
-gulp.task('serve', function () {
-  gulp.src('build')
-    .pipe(webserver({
-      open: true
-    }));
-});
+// Tell gulp to use the tasks just loaded
+gulp.registry(hub);
 
-// watch for changes and run the relevant task
-gulp.task('watch', function () {
-  gulp.watch('src/**/*.js', ['js']);
-  gulp.watch('src/**/*.html', ['html']);
-  gulp.watch('src/**/*.css', ['css']);
-});
+gulp.task('build', gulp.series(gulp.parallel('systemjs', 'systemjs:html', 'styles', 'other'), 'build'));
+gulp.task('test', gulp.series('karma:single-run'));
+gulp.task('test:auto', gulp.series('karma:auto-run'));
+gulp.task('serve', gulp.series(gulp.parallel('scripts', 'styles'), 'watch', 'browsersync'));
+gulp.task('serve:dist', gulp.series('default', 'browsersync:dist'));
+gulp.task('default', gulp.series('clean', 'build'));
+gulp.task('watch', watch);
 
-// move dependencies into build dir
-gulp.task('dependencies', function () {
-  return gulp.src([
-    'node_modules/traceur/bin/traceur-runtime.js',
-    'node_modules/systemjs/dist/system-csp-production.src.js',
-    'node_modules/systemjs/dist/system.js',
-    'node_modules/reflect-metadata/Reflect.js',
-    'node_modules/angular2/bundles/angular2.js',
-    'node_modules/angular2/bundles/angular2-polyfills.js',
-    'node_modules/rxjs/bundles/Rx.js',
-    'node_modules/es6-shim/es6-shim.min.js',
-    'node_modules/es6-shim/es6-shim.map'
-  ])
-    .pipe(gulp.dest('build/lib'));
-});
+function reloadBrowserSync(cb) {
+  browserSync.reload();
+  cb();
+}
 
-// transpile & move js
-gulp.task('js', function () {
-  return gulp.src('src/**/*.js')
-    .pipe(rename({
-      extname: ''
-    }))
-    .pipe(traceur({
-      modules: 'instantiate',
-      moduleName: true,
-      annotations: true,
-      types: true,
-      memberVariables: true
-    }))
-    .pipe(rename({
-      extname: '.js'
-    }))
-    .pipe(gulp.dest('build'));
-});
-
-// move html
-gulp.task('html', function () {
-  return gulp.src('src/**/*.html')
-    .pipe(gulp.dest('build'))
-});
-
-// move css
-gulp.task('css', function () {
-  return gulp.src('src/**/*.css')
-    .pipe(gulp.dest('build'))
-});
+function watch(done) {
+  gulp.watch(conf.path.src('**/*.html'), reloadBrowserSync);
+  gulp.watch([
+    conf.path.src('**/*.css')
+  ], gulp.series('styles'));
+  gulp.watch(conf.path.src('**/*.ts'), gulp.series('scripts'));
+  done();
+}

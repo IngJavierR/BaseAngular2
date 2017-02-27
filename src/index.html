@@ -1,31 +1,31 @@
 <!doctype html>
-<html lang="">
+<html>
   <head>
+    <base href="/">
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>base-angular-2</title>
+    <title>FountainJS</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="icon" type="image/png" href="http://fountainjs.io/assets/imgs/fountain.png" />
+  
+    <!-- build:css(.tmp) index.css -->
+    <link rel="stylesheet" href="index.css"></link>
+    <!-- endbuild -->
   </head>
+
+
   <body>
-
-    <main>Loading...</main>
-
-    <script src="lib/es6-shim.min.js"></script>
-    <script src="lib/angular2-polyfills.js"></script>
-    <script src="lib/traceur-runtime.js"></script>
-    <script src="lib/system-csp-production.src.js"></script>
-    <script src="lib/Reflect.js"></script>
-
-    <script>
-      System.config({defaultJSExtensions: true});
-    </script>
-
-    <script src="lib/angular2.js"></script>
-    <script src="lib/Rx.js"></script>
-
-    <script>
-      System.import('index').catch(console.log.bind(console));
-    </script>
-
+    <fountain-root>Loading...</fountain-root>
   </body>
+
+  <!-- build:js(.tmp) index.js -->
+  <script src="jspm_packages/system.js"></script>
+  <script src="jspm.browser.js"></script>
+  <script src="jspm.config.js"></script>
+
+  <script>
+    System.import('src/index.ts');
+  </script>
+  <!-- endbuild -->
 </html>
+
