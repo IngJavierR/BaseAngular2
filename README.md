@@ -1,2 +1,1 @@
-# BaseAngular2
-Proyecto base en angular2
+# base-angular-2
